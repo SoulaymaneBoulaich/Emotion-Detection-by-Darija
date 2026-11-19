@@ -1,1 +1,0 @@
-"""Second pretrained encoder reference — Owner: Fares Ilham"""
