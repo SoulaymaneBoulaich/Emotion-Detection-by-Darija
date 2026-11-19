@@ -1,0 +1,118 @@
+# PROJECT PROPOSAL — fill in this file and send it to your instructor.
+# Rename it to your-team-project.yml. Use spaces, not tabs.
+# Keep field names unchanged. Text after >- can span several indented lines.
+# The first block supplies your public card AFTER instructor approval.
+# Do not include student IDs, phone numbers, or other private information.
+
+title: "Beyond Sentiment: Emotion Detection in Moroccan Darija"
+students:
+  - "Soulaymane Boulaich"
+  - "Fares Ilham"
+  - "Tasnim Touil"
+description: >-
+  Can a model go beyond positive and negative sentiment in Moroccan Darija?
+  We plan to fine-tune a pretrained Darija language model to detect anger,
+  fear, joy and sadness in short texts and compare it with a lightweight
+  baseline. We will also test whether simple text normalization helps, and
+  study which close emotions the model confuses most often.
+
+# Optional: send the image alongside this file; do not embed it in YAML.
+# Prefer a landscape PNG, JPG, or WebP (approximately 1200 × 750 pixels).
+# Leave thumbnail empty to use the course placeholder.
+thumbnail: "emotions-darija.png"
+thumbnail_alt: "Four colored faces expressing anger, fear, joy and sadness, under the title 'Beyond Sentiment: Emotion Detection in Moroccan Darija'."
+thumbnail_credit: "Original illustration by the team" # Creator/source URL or 'Original illustration by the team'.
+
+# FOR INSTRUCTOR REVIEW — these details do not belong on the public card.
+proposal:
+  question: >-
+    How well can a fine-tuned Darija language model detect perceived anger,
+    fear, joy and sadness in Moroccan Darija text compared with a lightweight
+    baseline, which pairs of emotions does it confuse most often, and does
+    conservative text normalization change the results?
+  dataset:
+    name: "BRIGHTER / SemEval-2025 Task 11, Track A (Moroccan Arabic subset, 'ary')"
+    source: "https://huggingface.co/datasets/vgaraujov/semeval-2025-task11-track-a"
+    access_and_terms: >-
+      The dataset is publicly available on Hugging Face (and on the BRIGHTER
+      project page) under a CC BY 4.0 license. We can download and use it for
+      this course project. We will cite the BRIGHTER paper (Muhammad et al.,
+      2025a) and the SemEval-2025 Task 11 paper (Muhammad et al., 2025b), and
+      follow the attribution conditions of the license.
+    scope: >-
+      Short Moroccan Darija texts (news and social media) annotated by native
+      speakers with the perceived presence of six emotions: anger, disgust,
+      fear, joy, sadness and surprise. A text can have several emotions or
+      none. The Moroccan subset has about 2.7k examples (roughly 1,600 train,
+      270 dev and 800 test). On Hugging Face it is grouped with Algerian
+      Arabic in one configuration, so we will keep only the Moroccan examples
+      (ids starting with "ary"). We will train on all six labels so that texts
+      expressing only disgust or surprise are not mistaken for emotionless
+      texts, and report results focused on anger, fear, joy and sadness. We
+      will inspect the scripts used in the texts, including any code-switching.
+  approach: >-
+    Baseline: TF-IDF character n-grams with a one-vs-rest logistic regression,
+    which copes well with Darija's non-standard spelling. A small BiLSTM
+    trained from scratch (PyTorch) serves as a neural baseline. Main model:
+    fine-tune DarijaBERT, a BERT model pretrained on Moroccan Arabic text, for
+    multi-label classification (a classification head with sigmoid outputs and
+    binary cross-entropy loss). We reuse DarijaBERT's pretrained weights and
+    tokenizer from Hugging Face. We write the data pipeline, training loop,
+    per-label threshold tuning and error analysis ourselves. We also fine-tune
+    a second pretrained encoder (AraBERT or XLM-RoBERTa) with the same
+    protocol as a reference model.
+
+  evaluation: >-
+    We train on the official train split, select models and decision thresholds
+    on the dev split, and report final results once on the official test split.
+    Because the dev split is small, every result is the mean and standard
+    deviation over 3 random seeds. Metrics are per-emotion precision, recall
+    and F1, plus macro-F1 over the four target emotions and micro-F1 over all
+    labels. We compare against the TF-IDF baseline, the BiLSTM baseline and a
+    predict-the-majority baseline. Visual evidence includes per-emotion F1 bar charts, training
+    curves, a label co-occurrence heatmap comparing gold and predicted labels,
+    a confusion matrix on the texts that carry a single emotion, and a table
+    of representative errors grouped by likely cause (spelling variation,
+    code-switching, sarcasm, ambiguous emotion). For a sample of errors we also inspect
+    token-level attributions (Integrated Gradients with Captum) to see which
+    words drive the prediction. We will also note class imbalance and
+    annotation ambiguity.
+  experiment: >-
+    We vary one design choice: text preprocessing for DarijaBERT, comparing raw
+    text with conservative normalization (unifying common letter variants,
+    removing diacritics and elongation marks, collapsing repeated letters, and
+    replacing URLs and user mentions, while keeping emojis, punctuation and
+    Latin-script words). Model, splits, hyperparameters and seeds stay the same.
+    We predict that normalization will give a small gain by reducing errors
+    caused by spelling variation, but that the gain may be within seed-to-seed
+    noise, because DarijaBERT's tokenizer was already trained on informal
+    Darija text.
+  feasibility: >-
+    The project uses a small public text dataset and an existing pretrained
+    model, so nothing is trained from scratch and no sensitive data is
+    collected. The TF-IDF baseline runs on a laptop CPU and the small BiLSTM trains in minutes. Fine-tuning DarijaBERT on
+    about 1.6k short texts takes minutes per run on a free GPU (Google Colab
+    or Kaggle), so 3 seeds, 2 preprocessing settings and a second encoder are affordable.
+  team_roles: |-
+    Soulaymane Boulaich:
+    - Fine-tune DarijaBERT in PyTorch (Hugging Face) for six-label multi-label emotion classification, with sigmoid outputs and binary cross-entropy loss.
+    - Run the hyperparameter search (learning rate, batch size, number of epochs, maximum length) on the dev split.
+    - Tune the decision threshold of each emotion label on the dev split.
+    - Train with 3 random seeds and report the mean and standard deviation.
+    - Run the normalization experiment: train DarijaBERT on raw text and on normalized text with identical settings.
+
+    Fares Ilham:
+    - Load the dataset, keep only the Moroccan examples (ids starting with "ary"), and inspect label distribution, text lengths, scripts and code-switching.
+    - Build the final train, dev and test splits.
+    - Implement the conservative text normalization and produce the raw and normalized versions of the data.
+    - Fine-tune a second pretrained encoder (AraBERT or XLM-RoBERTa) in PyTorch for the same multi-label task, with the same training protocol.
+    - Run the hyperparameter search, threshold tuning and 3 random seeds for this second model.
+
+    Tasnim Touil:
+    - Build the TF-IDF with logistic regression baseline and the predict-the-majority baseline.
+    - Train a small neural baseline from scratch in PyTorch (BiLSTM) for the same multi-label task, with 3 random seeds.
+    - Write the evaluation code: per-emotion precision, recall and F1, macro-F1, micro-F1, and mean and standard deviation over seeds.
+    - Produce the charts: per-emotion F1 bars, training curves, label co-occurrence heatmap, and confusion matrix on single-emotion texts.
+    - Run the error analysis: group misclassified examples by cause, and compute token-level attributions (Integrated Gradients with Captum) on a sample of errors.
+# Your instructor sets the public status after review.
+# Report, code, and demo links can be supplied later when ready.

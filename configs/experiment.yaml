@@ -1,0 +1,39 @@
+# Shared experiment config — agree before changing
+dataset:
+  name: "vgaraujov/semeval-2025-task11-track-a"
+  lang_filter: "ary"          # keep only Moroccan Darija examples
+  train_split: "train"
+  dev_split: "dev"
+  test_split: "test"
+
+preprocessing:
+  normalize: false            # toggle raw vs. conservative Darija normalization
+  unify_letter_variants: true
+  remove_diacritics: true
+  collapse_elongation: true
+  collapse_repeated_letters: true
+  replace_urls: true
+  replace_mentions: true
+  keep_emojis: true
+  keep_punctuation: true
+  keep_latin_words: true
+
+model:
+  darija_bert: "aubmindlab/bert-base-arabertv02-darija"  # placeholder; verify exact HF id
+  second_encoder: "aubmindlab/bert-base-arabertv02"      # or xlm-roberta-base
+
+training:
+  task: "multi-label"         # 6 emotions: anger, disgust, fear, joy, sadness, surprise
+  loss: "bce_with_logits"
+  seeds: [42, 123, 7]
+  epochs: 3
+  batch_size: 16
+  learning_rate: 2e-5
+  max_length: 128
+  threshold_tuning: true      # per-emotion threshold on dev split
+
+report:
+  target_emotions: [anger, fear, joy, sadness]
+  all_labels: [anger, disgust, fear, joy, sadness, surprise]
+  metrics: [per_emotion_f1, macro_f1, micro_f1]
+  seeds_report: "mean_std"

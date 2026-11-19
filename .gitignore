@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+*.egg-info/
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Data & checkpoints (large files — do not commit)
+data/raw/
+data/processed/*.csv
+data/processed/*.jsonl
+data/splits/
+models/checkpoints/
+*.pth
+*.bin
+*.pt
+*.safetensors
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+Thumbs.db
+
+# Env secrets
+.env

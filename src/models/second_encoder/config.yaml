@@ -1,0 +1,4 @@
+# Second encoder config (mirrors configs/experiment.yaml training section)
+model_name: "aubmindlab/bert-base-arabertv02"  # or xlm-roberta-base
+num_labels: 6
+problem_type: "multi_label_classification"
